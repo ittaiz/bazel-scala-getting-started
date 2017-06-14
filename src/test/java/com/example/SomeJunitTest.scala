@@ -5,7 +5,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
 @RunWith(classOf[JUnit4])
-class SomeScalaTest {
+class SomeJunitTest {
 
   @Test
   def passingTest(): Unit = {

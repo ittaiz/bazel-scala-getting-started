@@ -1,4 +1,4 @@
-rules_scala_version="f4bd789900047f042b4e4a4a82fa93e2986e244e" # update this as needed
+rules_scala_version="5d6ff512652b8b55f5d26f6ea69e05d86582d996" # update this as needed
 
 http_archive(
              name = "io_bazel_rules_scala",

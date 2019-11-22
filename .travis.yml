@@ -1,49 +1,42 @@
-# trusty beta image has jdk8, gcc4.8.4
-dist: trusty
+dist: xenial
 sudo: required
-# xcode8 has jdk8
-osx_image: xcode8
-# Not technically required but suppresses 'Ruby' in Job status message.
-language: java
+language: sh
 
-os:
-  - linux
-  - osx
+addons:
+  apt:
+    packages:
+    - libxml2-utils
 
-env:
-  - V=0.6.1
+cache:
+    directories:
+     - .bazel_cache
+     - ~/.bazel_binaries
+
+_linux: &linux
+  os: linux
+_osx: &osx
+  os: osx
+  osx_image: xcode10.1
+
+jobs:
+  include:
+# Test
+    - <<: *linux
+    - <<: *osx
 
 before_install:
   - |
     if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
       OS=darwin
     else
-      sysctl kernel.unprivileged_userns_clone=1
-      sudo apt-get update -q 
-      sudo apt-get install libxml2-utils -y
       OS=linux
     fi
-    if [[ "${V}" == "HEAD" ]]; then
-      # Determine last successful build number. This may change while we are
-      # downloading, so it's important to determine ahead of time, in case
-      # we need to resume the download.
-      CI_BASE="http://ci.bazel.io/job/Bazel/JAVA_VERSION=1.8,PLATFORM_NAME=${OS}-x86_64/"
-      CI_INDEX_URL="${CI_BASE}/lastSuccessfulBuild/"
-      wget -q -O build-index.html "${CI_INDEX_URL}"
-      CI_BUILD=$(grep '<title>' build-index.html | sed -e 's/^.*#\([0-9]*\).*$/\1/')
-      # Determine the artifact name. This is normally, bazel--installer.sh,
-      # but it may be, for example, bazel-0.5rc2-installer.sh before a release.
-      CI_ARTIFACT=$(grep -o 'bazel-[^\"-]*-installer.sh' build-index.html | head -n 1)
-      URL="${CI_BASE}/${CI_BUILD}/artifact/output/ci/${CI_ARTIFACT}"
-      rm build-index.html    
-    else
-      URL="https://github.com/bazelbuild/bazel/releases/download/${V}/bazel-${V}-installer-${OS}-x86_64.sh"
-    fi
+    URL="https://github.com/bazelbuild/bazel/releases/download/1.1.0/bazel-1.1.0-installer-${OS}-x86_64.sh"
     wget -O install.sh "${URL}"
     chmod +x install.sh
     ./install.sh --user
     rm -f install.sh
   - cat .bazelrc.travis >> .bazelrc
-
 script:
-  - bash bazel test //...
+  - |
+    bash bazel test //...

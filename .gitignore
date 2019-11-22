@@ -1,5 +1,1 @@
-/bazel-scala-getting-started
-/bazel-bin
-/bazel-genfiles
-/bazel-out
-/bazel-testlogs
+/bazel-*

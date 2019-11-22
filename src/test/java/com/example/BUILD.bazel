@@ -1,0 +1,6 @@
+scala_specs2_junit_test(
+    name = "example",
+    srcs = glob(["*.scala"]) + glob(["*.java"]),
+    deps = ["//src/main/java/com/example"],
+    suffixes = ["Test"]
+)
